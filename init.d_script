@@ -1,0 +1,33 @@
+#! /bin/sh
+# /etc/init.d/nzedbirc
+
+### BEGIN INIT INFO
+# Provides:          nzedbirc
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Service for starting nZEDb bots.
+# Description:       Starts screen instances to run the bots required for scraping PREs and reqids.
+### END INIT INFO
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Service nzbedirc starting..."
+    # You should change this path to where you the source in. Optionally prepend the following to run as your user: su username -c
+    screen -dmS masterbot sh /home/username/IRCScraper/run.sh
+    ;;
+  stop)
+    echo "Service nzedbirc stopping..."
+    # kill application you want to stop
+    # Crappy way, but works if you have nothing else running in screen.
+    killall screen
+    ;;
+  *)
+    echo "Usage: /etc/init.d/nzedbirc {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
