@@ -62,6 +62,7 @@ class IRCServer extends IRCClient
 
 	protected function startSniffing()
 	{
+		$time = time();
 		while (true)
 		{
 			if ($this->_optimizeIterations++ === 300) {
@@ -86,18 +87,23 @@ class IRCServer extends IRCClient
 			$allPre = $this->db->query(
 				'SELECT p.*, UNIX_TIMESTAMP(p.predate) AS ptime, groups.name AS gname FROM predb p LEFT JOIN groups ON groups.id = p.groupid WHERE p.shared in (-1, 0)'
 			);
-			foreach ($allPre as $pre) {
-				if ($this->formatMessage($pre)) {
-					echo 'Posted [' . $pre['title'] . ']' . PHP_EOL;
-					$this->db->queryExec('UPDATE predb SET shared = 1 WHERE id = ' . $pre['id']);
-				} else {
-					echo 'Error posting [' . $pre['title'] . ']' . PHP_EOL;
-					$this->_reconnect();
-					if (!$this->_connected()) {
-						exit('IRC Error: The connection was lost and we could not reconnect.' . PHP_EOL);
+			if ($allPre) {
+				$time = time();
+				foreach ($allPre as $pre) {
+					if ($this->formatMessage($pre)) {
+						echo 'Posted [' . $pre['title'] . ']' . PHP_EOL;
+						$this->db->queryExec('UPDATE predb SET shared = 1 WHERE id = ' . $pre['id']);
+					} else {
+						echo 'Error posting [' . $pre['title'] . ']' . PHP_EOL;
+						$this->_reconnect();
+						if (!$this->_connected()) {
+							exit('IRC Error: The connection was lost and we could not reconnect.' . PHP_EOL);
+						}
 					}
+					sleep(POST_BOT_POST_DELAY);
 				}
-				sleep(POST_BOT_POST_DELAY);
+			} elseif ((time() - $time > 60)) {
+				$this->_writeSocket('PRIVMSG ' . POST_BOT_CHANNEL . ' INFO: [' . gmdate('o-m-d G:i:s') . ' This message is to confirm I am still active.]';
 			}
 
 			sleep(POST_BOT_SCAN_DELAY);
