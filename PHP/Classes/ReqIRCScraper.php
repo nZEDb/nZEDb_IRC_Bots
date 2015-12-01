@@ -239,6 +239,14 @@ class ReqIRCScraper extends IRCClient
 			$this->CurPre['reqid'] = $matches['reqid'];
 			$this->checkForDupe();
 		}
+
+		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
+			$this->CurPre['source']   = 'alt.binaries.sounds.flac';
+			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
+			$this->CurPre['reqid'] = $matches['reqid'];
+			$this->checkForDupe();
+		}
 	}
 
 	/**
@@ -273,6 +281,14 @@ class ReqIRCScraper extends IRCClient
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
+			$this->CurPre['source']  = 'alt.binaries.mom';
+			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
+			$this->CurPre['reqid'] = $matches['reqid'];
+			$this->checkForDupe();
+		}
+
+		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']  = 'alt.binaries.mom';
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
