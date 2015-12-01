@@ -1,5 +1,7 @@
 <?php
 
+// Copy to settings.php
+
 /**
  * Settings for : scrapeIRC, postIRC, scrapeWEB, scrapeM2VRU
  * These are all the settings for the bot posting PRE info to IRC.
