@@ -233,7 +233,7 @@ class ReqIRCScraper extends IRCClient
 	protected function ab_flac()
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[42614] [FULL 10x15MB You_Blew_It-Keep_Doing_What_Youre_Doing-CD-FLAC-2014-WRE] Requested by:[*Anonymous* 21s ago] Comments:[0] Watchers:[0] Points Earned:[10] [Pred 3m 16s ago]
-		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $this->_channelData['message'], $matches)) {
+		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']   = 'alt.binaries.sounds.flac';
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
@@ -249,7 +249,7 @@ class ReqIRCScraper extends IRCClient
 	protected function ab_moovee()
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $this->_channelData['message'], $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']   = 'alt.binaries.moovee';
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
@@ -272,7 +272,7 @@ class ReqIRCScraper extends IRCClient
 	protected function ab_foreign()
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $this->_channelData['message'], $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']  = 'alt.binaries.mom';
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
@@ -288,7 +288,7 @@ class ReqIRCScraper extends IRCClient
 	protected function ab_teevee()
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[183520] [FULL 19x50MB Louis.Therouxs.LA.Stories.S01E02.720p.HDTV.x264-FTP] Requested by:[*Anonymous* 53s ago] Comments:[0] Watchers:[0] Points Earned:[64] [Pred 3m 45s ago]
-		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $this->_channelData['message'], $matches)) {
+		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']   = 'alt.binaries.teevee';
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
