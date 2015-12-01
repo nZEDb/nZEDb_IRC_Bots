@@ -30,6 +30,7 @@ From CLI, import the schema: `mysql -p ircpredb < schema_predb.sql`
 This database is used to store and retrieve PRE info fetched from IRC and web sources.
 You can periodically delete old rows (older than 24 hours) to save space in this database, you can write a simple bash script to do this, optimizing afterwards is recommended too.
 
+Copy PHP/settings.example.php to PHP/settings.php
 
 Edit PHP/settings.php
 
