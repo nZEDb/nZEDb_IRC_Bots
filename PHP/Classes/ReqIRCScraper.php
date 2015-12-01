@@ -238,7 +238,6 @@ class ReqIRCScraper extends IRCClient
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
 			$this->checkForDupe();
-		}
 
 		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
 		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
@@ -285,7 +284,6 @@ class ReqIRCScraper extends IRCClient
 			$this->CurPre['title'] = $this->db->escapeString($matches['title']);
 			$this->CurPre['reqid'] = $matches['reqid'];
 			$this->checkForDupe();
-		}
 
 		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
 		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
