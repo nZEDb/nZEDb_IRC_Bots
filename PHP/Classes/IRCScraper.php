@@ -454,7 +454,7 @@ class IRCScraper extends IRCClient
 	protected function ab_teevee()
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[183520] [FULL 19x50MB Louis.Therouxs.LA.Stories.S01E02.720p.HDTV.x264-FTP] Requested by:[*Anonymous* 53s ago] Comments:[0] Watchers:[0] Points Earned:[64] [Pred 3m 45s ago]
-		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].*?(\[Pred\s+(?P<predago>.+?)\s+ago\])/i', $this->_channelData['message'], $matches)) {
+		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.teevee');
 			$this->CurPre['category'] = 'TV';
