@@ -406,6 +406,14 @@ class IRCScraper extends IRCClient
 			$this->CurPre['category'] = 'FLAC';
 			$this->siftMatches($matches);
 		}
+		
+		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
+			$this->CurPre['source']   = '#a.b.flac';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.sounds.flac');
+			$this->CurPre['category'] = 'FLAC';
+			$this->siftMatches($matches);
+		}
 	}
 
 	/**
@@ -442,6 +450,12 @@ class IRCScraper extends IRCClient
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.*?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $this->_channelData['message'], $matches)) {
 			$this->CurPre['source']  = '#a.b.foreign';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.mom');
+			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[67048] [A.Certain.Justice.2014.FRENCH.BDRip.x264-COUAC] Reason:[pred.without.proof]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $this->_channelData['message'], $matches)) {
+			$this->CurPre['source']   = '#a.b.foreign';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.mom');
 			$this->siftMatches($matches);
 		}
 	}
