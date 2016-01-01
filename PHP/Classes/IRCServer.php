@@ -124,7 +124,7 @@ class IRCServer extends IRCClient
 		}
 		$string .=
 			$this->_box_color . 'DT:' . $this->_inner_color .
-				gmdate('o-m-d G:i:s', $pre['ptime']) .
+				gmdate('Y-m-d G:i:s', $pre['ptime']) .
 			$this->_end_color .
 			$this->_box_color . 'TT:' . $this->_inner_color .
 				$pre['title'] .
