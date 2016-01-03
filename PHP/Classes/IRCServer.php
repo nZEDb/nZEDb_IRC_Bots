@@ -104,7 +104,7 @@ class IRCServer extends IRCClient
 				}
 			} elseif ((time() - $time > 60)) {
 				$time = time();
-				$this->_writeSocket('PRIVMSG ' . POST_BOT_CHANNEL . ' INFO: [' . gmdate('o-m-d G:i:s') . ' This message is to confirm I am still active.]');
+				$this->_writeSocket('PRIVMSG ' . POST_BOT_CHANNEL . ' INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
 			}
 
 			sleep(POST_BOT_SCAN_DELAY);
