@@ -207,7 +207,7 @@ class fetchWeb
 	}
 
 	/**
-	 * Get pre from XrelP2P.
+	 * Get pre from Xrel.
 	 */
 	protected function _retrieveXrel()
 	{
