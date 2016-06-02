@@ -153,15 +153,18 @@ if (defined('pre_settings')) {
 		 */
 		define('POST_BOT_DEBUG', false);
 		/**
-		 * This is the channel to use when posting the PRE's to IRC.
+		 * This is the channel(s) to use when posting the PRE's to IRC.
+		 * @note For multiple channels, seperate them by commas: '#channel1,#channel2,#channel3'
 		 * @note This MUST start with a #
 		 */
 		define('POST_BOT_CHANNEL', '#myPREchannel');
 		/**
 		 * This is the channel password, if your channel requires a password.
-		 * @default null
+		 * @note For multiple channels, seperate by commas 'password1,password2,password3'
+		 *       If a channel has no password (in this case channel1 and channel3 have no passwords): ',password2,'
+		 * @default ''
 		 */
-		define('POST_BOT_CHANNEL_PASSWORD', null);
+		define('POST_BOT_CHANNEL_PASSWORD', '');
 		/**
 		 * This is the delay in seconds to wait in between posting PRE's to the channel, if you lower this
 		 * your IRC server might ban or kick you from the server.

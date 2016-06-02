@@ -485,6 +485,9 @@ class IRCClient
 	 */
 	protected function _joinChannel($channel, $password)
 	{
+		if ($password === '') {
+			$password = null;
+		}
 		$this->_writeSocket('JOIN ' . $channel . ($password === null ? '' : ' ' . $password));
 	}
 

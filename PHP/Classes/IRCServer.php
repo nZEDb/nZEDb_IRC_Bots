@@ -9,6 +9,9 @@ class IRCServer extends IRCClient
 	protected $_box_color;
 	protected $_end_color;
 	protected $_inner_color;
+	protected $_channels;
+	protected $_ping_string;
+	public $db;
 
 	public function __construct()
 	{
@@ -38,7 +41,7 @@ class IRCServer extends IRCClient
 		// Connect to IRC.
 		if ($this->connect(POST_BOT_HOST, POST_BOT_PORT, POST_BOT_TLS) === false) {
 			exit (
-				'Error connecting to ZNC!' .
+				'Error connecting to IRC!' .
 				PHP_EOL
 			);
 		}
@@ -49,15 +52,27 @@ class IRCServer extends IRCClient
 
 		// Login to IRC.
 		if ($this->login(POST_BOT_NICKNAME, POST_BOT_REALNAME, POST_BOT_REALNAME, POST_BOT_PASSWORD) === false) {
-			exit('Error logging in to ZNC!' .
+			exit('Error logging in to IRC!' .
 				PHP_EOL
 			);
 		}
 
 		// Join channels.
-		$this->joinChannels(array(POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD));
+		$this->_channels = [];
+		$channels = array(POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD);
+		$this->_channels = [POST_BOT_CHANNEL];
+		if (strpos(POST_BOT_CHANNEL, ",#") !== false) {
+			$channels = $this->_channels = [];
+			$passwords = explode(',', POST_BOT_CHANNEL_PASSWORD);
+			foreach(explode(',', POST_BOT_CHANNEL) as $key => $channel){
+				$this->_channels[] = $channel;
+				$channels[] = [$channel => (isset($passwords[$key]) ? $passwords[$key] : '')];
+			}
+		}
+		$this->_channels = array_unique($this->_channels);
+		$this->joinChannels($channels);
 
-		echo '[' . date('r') . '] [Connected to ZNC!]' . PHP_EOL;
+		echo '[' . date('r') . '] [Connected to IRC!]' . PHP_EOL;
 	}
 
 	protected function startSniffing()
@@ -104,7 +119,9 @@ class IRCServer extends IRCClient
 				}
 			} elseif ((time() - $time > 60)) {
 				$time = time();
-				$this->_writeSocket('PRIVMSG ' . POST_BOT_CHANNEL . ' INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
+				foreach($this->_channels as $channel) {
+					$this->_writeSocket('PRIVMSG ' . $channel . ' INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
+				}
 			}
 
 			sleep(POST_BOT_SCAN_DELAY);
@@ -175,7 +192,13 @@ class IRCServer extends IRCClient
 			$string .= $this->_end_color;
 		}
 
-		return $this->_writeSocket('PRIVMSG ' . POST_BOT_CHANNEL . ' ' . $string);
+		$success = true;
+		foreach($this->_channels as $channel) {
+			if (!$this->_writeSocket('PRIVMSG ' . $channel . ' ' . $string)) {
+				$success = false;
+			}
+		}
+		return $success;
 	}
 
 }
