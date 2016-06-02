@@ -58,8 +58,7 @@ class IRCServer extends IRCClient
 		}
 
 		// Join channels.
-		$this->_channels = [];
-		$channels = array(POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD);
+		$channels = [POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD];
 		$this->_channels = [POST_BOT_CHANNEL];
 		if (strpos(POST_BOT_CHANNEL, ",#") !== false) {
 			$channels = $this->_channels = [];
