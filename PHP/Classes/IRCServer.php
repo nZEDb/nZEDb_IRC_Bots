@@ -58,18 +58,15 @@ class IRCServer extends IRCClient
 		}
 
 		// Join channels.
-		$channels = [POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD];
-		$this->_channels = [POST_BOT_CHANNEL];
+		$this->_channels = [POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD];
 		if (strpos(POST_BOT_CHANNEL, ",#") !== false) {
-			$channels = $this->_channels = [];
+			$this->_channels = [];
 			$passwords = explode(',', POST_BOT_CHANNEL_PASSWORD);
 			foreach(explode(',', POST_BOT_CHANNEL) as $key => $channel){
-				$this->_channels[] = $channel;
-				$channels[$channel] = (isset($passwords[$key]) ? $passwords[$key] : '');
+				$this->_channels[$channel] = (isset($passwords[$key]) ? $passwords[$key] : '');
 			}
 		}
-		$this->_channels = array_unique($this->_channels);
-		$this->joinChannels($channels);
+		$this->joinChannels($this->_channels);
 
 		echo '[' . date('r') . '] [Connected to IRC!]' . PHP_EOL;
 	}
@@ -118,7 +115,7 @@ class IRCServer extends IRCClient
 				}
 			} elseif ((time() - $time > 60)) {
 				$time = time();
-				foreach($this->_channels as $channel) {
+				foreach($this->_channels as $channel => $password) {
 					$this->_writeSocket('PRIVMSG ' . $channel . ' INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
 				}
 			}
@@ -192,7 +189,7 @@ class IRCServer extends IRCClient
 		}
 
 		$success = true;
-		foreach($this->_channels as $channel) {
+		foreach($this->_channels as $channel => $password) {
 			if (!$this->_writeSocket('PRIVMSG ' . $channel . ' ' . $string)) {
 				$success = false;
 			}
