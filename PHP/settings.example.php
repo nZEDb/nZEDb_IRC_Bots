@@ -79,7 +79,7 @@ if (defined('pre_settings')) {
 		define('FETCH_PRELIST', false);
 		/**
 		 * Whether to fetch PRE's from orlydb or not.
-		 * @default true
+		 * @default false
 		 */
 		define('FETCH_ORLYDB', false);
 		/**
@@ -87,6 +87,16 @@ if (defined('pre_settings')) {
 		 * @default false
 		 */
 		define('FETCH_SRRDB', false);
+		/**
+		 * Whether to fetch PRE's from xrel.to or not.
+		 * @default false
+		 */
+		define('FETCH_XREL', false);
+		/**
+		 * Whether to fetch P2P PRE's from xrel.to or not.
+		 * @default false
+		 */
+		define('FETCH_XREL_P2P', false);
 	}
 
 	/*******************************************************************************************************************

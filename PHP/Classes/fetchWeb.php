@@ -25,6 +25,8 @@ class fetchWeb
 		if (FETCH_ORLYDB) { $this->_activeSources++; }
 		if (FETCH_PRELIST) { $this->_activeSources++; }
 		if (FETCH_SRRDB) { $this->_activeSources++; }
+		if (FETCH_XREL) { $this->_activeSources++; }
+		if (FETCH_XREL_P2P) { $this->_activeSources++; }
 		if (!$this->_activeSources) {
 			sleep(WEB_SLEEP_TIME);
 			return;
@@ -49,6 +51,12 @@ class fetchWeb
 			if (FETCH_SRRDB) {
 				$this->_retrieveSrr();
 			}
+			if (FETCH_XREL) {
+				$this->_retrieveXrel();
+			}
+			if (FETCH_XREL_P2P) {
+				$this->_retrieveXrelP2P();
+			}
 		}
 	}
 
@@ -64,9 +72,9 @@ class fetchWeb
 	 */
 	protected function _retrieveOmgwtfnzbs()
 	{
+		echo "Fetching OmgwtfNzbs\n";
 		$buffer = $this->_getUrl('http://rss.omgwtfnzbs.org/rss-info.php');
 		if ($buffer !== false && preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches)) {
-			echo "Fetching OmgwtfNzbs\n";
 			$this->_db->ping(true);
 			foreach ($matches as $match) {
 				foreach ($match as $m) {
@@ -79,10 +87,10 @@ class fetchWeb
 					}
 				}
 			}
-		} else {
-			echo "Update from OmgWtfNzbs failed.\n";
+			$this->_echoDone();
+			return;
 		}
-		$this->_echoDone();
+		echo "Update from OmgWtfNzbs failed.\n";
 	}
 
 	/**
@@ -92,9 +100,9 @@ class fetchWeb
 	 */
 	protected function _retrieveZenet()
 	{
+		echo "Fetching Zenet\n";
 		$buffer = $this->_getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false && preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
-			echo "Fetching Zenet\n";
 			$this->_db->ping(true);
 			foreach ($matches as $match) {
 				foreach ($match as $m) {
@@ -107,10 +115,10 @@ class fetchWeb
 					}
 				}
 			}
-		} else {
-			echo "Update from Zenet failed.\n";
+			$this->_echoDone();
+			return;
 		}
-		$this->_echoDone();
+		echo "Update from Zenet failed.\n";
 	}
 
 	/**
@@ -118,9 +126,9 @@ class fetchWeb
 	 */
 	protected function _retrievePrelist()
 	{
+		echo "Fetching Prelist\n";
 		$buffer = $this->_getUrl('http://www.prelist.ws/');
 		if ($buffer !== false && preg_match_all('/<tt id="\d+"><small><span class=".+?">.+?<\/span><\/small><br\/><\/tt>/s', $buffer, $matches)) {
-			echo "Fetching Prelist\n";
 			$this->_db->ping(true);
 			foreach ($matches as $match) {
 				foreach ($match as $m) {
@@ -142,10 +150,10 @@ class fetchWeb
 					}
 				}
 			}
-		} else {
-			echo "Update from Prelist failed.\n";
+			$this->_echoDone();
+			return;
 		}
-		$this->_echoDone();
+		echo "Update from Prelist failed.\n";
 	}
 
 	/**
@@ -153,9 +161,9 @@ class fetchWeb
 	 */
 	protected  function _retrieveOrlydb()
 	{
+		echo "Fetching OrlyDB\n";
 		$buffer = $this->_getUrl('http://www.orlydb.com/');
 		if ($buffer !== false && preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match) && preg_match_all('/<div>.+?<\/div>/s', $match['1'], $matches)) {
-			echo "Fetching OrlyDB\n";
 			$this->_db->ping(true);
 			foreach ($matches as $m1) {
 				foreach ($m1 as $m) {
@@ -167,10 +175,10 @@ class fetchWeb
 					}
 				}
 			}
-		} else {
-			echo "Update from Orly failed.\n";
+			$this->_echoDone();
+			return;
 		}
-		$this->_echoDone();
+		echo "Update from Orly failed.\n";
 	}
 
 	/**
@@ -178,9 +186,9 @@ class fetchWeb
 	 */
 	protected function _retrieveSrr()
 	{
+		echo "Fetching SrrDB\n";
 		$data = $this->_getUrl("http://www.srrdb.com/feed/srrs");
 		if ($data !== false) {
-			echo "Fetching SrrDB\n";
 			$this->_db->ping(true);
 			$data = @simplexml_load_string($data);
 			if ($data !== false) {
@@ -191,11 +199,70 @@ class fetchWeb
 					$result['source'] = 'srrdb';
 					$this->_verifyPreData($result);
 				}
+				$this->_echoDone();
+				return;
 			}
-		} else {
-			echo "Update from Srr failed.\n";
 		}
-		$this->_echoDone();
+		echo "Update from Srr failed.\n";
+	}
+
+	/**
+	 * Get pre from XrelP2P.
+	 */
+	protected function _retrieveXrel()
+	{
+		echo "Fetching Xrel\n";
+		$data = $this->_getUrl("https://api.xrel.to/v2/release/latest.json?per_page=100");
+		if ($data !== false) {
+			$data = json_decode($data);
+			if ($data) {
+				$this->_db->ping(true);
+				foreach ($data->list as $release) {
+					$result = array();
+					$result['title'] = trim($release->dirname);
+					$result['date'] = trim($release->time);
+					$result['source'] = 'xrel';
+					if (isset($release->size->number) && isset($release->size->unit)) {
+						$result['size'] = trim($release->size->number) . trim($release->size->unit);
+					}
+					$this->_verifyPreData($result);
+				}
+				$this->_echoDone();
+				return;
+			}
+		}
+		echo "Update from Xrel failed.\n";
+	}
+
+	/**
+	 * Get pre from XrelP2P.
+	 */
+	protected function _retrieveXrelP2P()
+	{
+		echo "Fetching XrelP2P\n";
+		$data = $this->_getUrl("https://api.xrel.to/v2/p2p/releases.json?per_page=100");
+		if ($data !== false) {
+			$data = json_decode($data);
+			if ($data) {
+				$this->_db->ping(true);
+				foreach ($data->list as $release) {
+					$result = array();
+					$result['title'] = trim($release->dirname);
+					$result['date'] = trim($release->pub_time);
+					$result['source'] = 'xrelp2p';
+					if (isset($release->size_mb)) {
+						$result['size'] = trim($release->size_mb) . "MB";
+					}
+					if (isset($release->category->meta_cat) && isset($release->category->sub_cat)) {
+						$result['category'] = ucfirst(trim($release->category->meta_cat)) . " " . trim($release->category->sub_cat);
+					}
+					$this->_verifyPreData($result);
+				}
+				$this->_echoDone();
+				return;
+			}
+		}
+		echo "Update from XrelP2P failed.\n";
 	}
 
 	protected function _verifyPreData(&$matches)
