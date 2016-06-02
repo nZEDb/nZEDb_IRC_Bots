@@ -66,7 +66,7 @@ class IRCServer extends IRCClient
 			$passwords = explode(',', POST_BOT_CHANNEL_PASSWORD);
 			foreach(explode(',', POST_BOT_CHANNEL) as $key => $channel){
 				$this->_channels[] = $channel;
-				$channels[] = [$channel => (isset($passwords[$key]) ? $passwords[$key] : '')];
+				$channels[$channel] = (isset($passwords[$key]) ? $passwords[$key] : '');
 			}
 		}
 		$this->_channels = array_unique($this->_channels);
