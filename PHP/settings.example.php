@@ -213,11 +213,11 @@ if (defined('pre_settings')) {
 		 */
 		$eUsername = '';
 		/**
-		 * The hostname/IP of the IRC/ZNC server.
+		 * The hostname/IP of the IRC or ZNC server.
 		 */
 		define('EFNET_BOT_SERVER', '127.0.0.1');
 		/**
-		 * The port of the IRC/ZNC server.
+		 * The port of the IRC or ZNC server.
 		 * @default 6667
 		 */
 		define('EFNET_BOT_PORT', '6667');
@@ -240,7 +240,7 @@ if (defined('pre_settings')) {
 		 */
 		define('EFNET_BOT_PASSWORD', '');
 		/**
-		 * To use SSL or TLS encryption on the IRC/ZNC server.
+		 * To use SSL or TLS encryption on the IRC or ZNC server.
 		 * @default false
 		 */
 		define('EFNET_BOT_ENCRYPTION', false);
@@ -289,11 +289,12 @@ if (defined('pre_settings')) {
 		 */
 		$cUsername = '';
 		/**
-		 * The hostname/IP of the IRC/ZNC server.
+		 * The hostname/IP of the IRC or ZNC server.
+		 * @note The hostname for corrupt-net is irc.corrupt-net.org
 		 */
 		define('CORRUPT_BOT_HOST', '127.0.0.1');
 		/**
-		 * The port of the IRC/ZNC server.
+		 * The port of the IRC or ZNC server.
 		 * @default 6667
 		 */
 		define('CORRUPT_BOT_PORT', '6667');
@@ -316,7 +317,7 @@ if (defined('pre_settings')) {
 		 */
 		define('CORRUPT_BOT_PASSWORD', '');
 		/**
-		 * To use SSL or TLS encryption on the IRC/ZNC server.
+		 * To use SSL or TLS encryption on the IRC or ZNC server.
 		 * @default false
 		 */
 		define('CORRUPT_BOT_ENCRYPTION', false);
@@ -376,11 +377,11 @@ else if (defined('req_settings')) {
 	 */
 	$username = '';
 	/**
-	 * The hostname/IP of the IRC/ZNC server.
+	 * The hostname/IP of the IRC or ZNC server.
 	 */
 	define('REQID_BOT_HOST', '127.0.0.1');
 	/**
-	 * The port of the IRC/ZNC server.
+	 * The port of the IRC or ZNC server.
 	 * @default 6667
 	 */
 	define('REQID_BOT_PORT', '6667');
@@ -403,7 +404,7 @@ else if (defined('req_settings')) {
 	 */
 	define('REQID_BOT_PASSWORD', '');
 	/**
-	 * To use SSL or TLS encryption on the IRC/ZNC server.
+	 * To use SSL or TLS encryption on the IRC or ZNC server.
 	 * @default false
 	 */
 	define('REQID_BOT_ENCRYPTION', false);
