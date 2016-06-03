@@ -22,8 +22,6 @@ class fetchWeb
 
 	public function __construct()
 	{
-		if (FETCH_ORLYDB) { $this->_activeSources++; }
-		if (FETCH_PRELIST) { $this->_activeSources++; }
 		if (FETCH_SRRDB) { $this->_activeSources++; }
 		if (FETCH_XREL) { $this->_activeSources++; }
 		if (FETCH_XREL_P2P) { $this->_activeSources++; }
@@ -39,15 +37,6 @@ class fetchWeb
 	protected function _start()
 	{
 		while(true) {
-			//$this->_retrieveOmgwtfnzbs();
-			/* Same content at corrupt.
-			$this->_retrieveZenet();*/
-			if (FETCH_PRELIST) {
-				$this->_retrievePrelist();
-			}
-			if (FETCH_ORLYDB) {
-				$this->_retrieveOrlydb();
-			}
 			if (FETCH_SRRDB) {
 				$this->_retrieveSrr();
 			}
@@ -68,120 +57,6 @@ class fetchWeb
 	}
 
 	/**
-	 * Retrieve pre info from omg.
-	 */
-	protected function _retrieveOmgwtfnzbs()
-	{
-		echo "Fetching OmgwtfNzbs\n";
-		$buffer = $this->_getUrl('http://rss.omgwtfnzbs.org/rss-info.php');
-		if ($buffer !== false && preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches)) {
-			$this->_db->ping(true);
-			foreach ($matches as $match) {
-				foreach ($match as $m) {
-					if (preg_match('/<title>(?P<title>.+?)\s+-\s+omgwtfnzbs\.org.*?<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2)) {
-
-						$matches2['size'] = (round($matches2['size1']) . $matches2['size2']);
-						$matches2['source'] = 'omgwtfnzbs';
-						$matches2['date'] = strtotime($matches2['date']);
-						$this->_verifyPreData($matches2);
-					}
-				}
-			}
-			$this->_echoDone();
-			return;
-		}
-		echo "Update from OmgWtfNzbs failed.\n";
-	}
-
-	/**
-	 * Get new pre data from zenet.
-	 *
-	 * @return int
-	 */
-	protected function _retrieveZenet()
-	{
-		echo "Fetching Zenet\n";
-		$buffer = $this->_getUrl('http://pre.zenet.org/live.php');
-		if ($buffer !== false && preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
-			$this->_db->ping(true);
-			foreach ($matches as $match) {
-				foreach ($match as $m) {
-					if (preg_match('/<span class="bold">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
-
-						$matches2['size'] = (round($matches2['size1']) . $matches2['size2']);
-						$matches2['source'] = 'zenet';
-						$matches2['date'] = strtotime($matches2['date']);
-						$this->_verifyPreData($matches2);
-					}
-				}
-			}
-			$this->_echoDone();
-			return;
-		}
-		echo "Update from Zenet failed.\n";
-	}
-
-	/**
-	 * Get new pre from pre list.
-	 */
-	protected function _retrievePrelist()
-	{
-		echo "Fetching Prelist\n";
-		$buffer = $this->_getUrl('http://www.prelist.ws/');
-		if ($buffer !== false && preg_match_all('/<tt id="\d+"><small><span class=".+?">.+?<\/span><\/small><br\/><\/tt>/s', $buffer, $matches)) {
-			$this->_db->ping(true);
-			foreach ($matches as $match) {
-				foreach ($match as $m) {
-					if (preg_match(
-						'/">\[\s*(?P<date>\d+\.\d+\.(19|20)\d{2}.+?UTC).+?section=\s*(?P<category>.+?)\s*".+?<a href="\?search=.+?">\s*(?P<title>.+?)\s*<\/a>.+?<b>\[\s*(?P<size>\d+(\.\d+)?[KMGTP]?B)\s*\]<\/b>.+?<b>\[\s*(?P<files>\d+F)\s*\]<\/b>/i',
-						$m, $result))
-					{
-						$result['source'] = 'prelist';
-						$result['date'] = strtotime($result['date']);
-						$this->_verifyPreData($result);
-					} else if (preg_match(
-						'/">\[\s*(?P<date>\d+\.\d+\.(19|20)\d{2}.+?UTC).+?<a title="\s*(?P<reason>.+?)\s*">\s*(?P<nuked>(UN)?NUKED)\s*<\/a>.+?section=\s*(?P<category>.+?)\s*".+?<a href="\?search=.+?">\s*(?P<title>.+?)\s*<\/a>/',
-						$m, $result))
-					{
-						$result['source'] = 'prelist';
-						$result['date'] = strtotime($result['date']);
-						$result['nuked'] = ($result['nuked'] === 'UNNUKED' ? 1 : 2);
-						$this->_verifyPreData($result);
-					}
-				}
-			}
-			$this->_echoDone();
-			return;
-		}
-		echo "Update from Prelist failed.\n";
-	}
-
-	/**
-	 * Get new pre from OrlyDB.
-	 */
-	protected  function _retrieveOrlydb()
-	{
-		echo "Fetching OrlyDB\n";
-		$buffer = $this->_getUrl('http://www.orlydb.com/');
-		if ($buffer !== false && preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match) && preg_match_all('/<div>.+?<\/div>/s', $match['1'], $matches)) {
-			$this->_db->ping(true);
-			foreach ($matches as $m1) {
-				foreach ($m1 as $m) {
-					if (preg_match('/timestamp">(?P<date>.+?)<\/span>.+?section">.+?">(?P<category>.+?)<\/a>.+?release">(?P<title>.+?)<\/span>(.+info">(?P<size>.+?) \| (?P<files>\d+F))?/s', $m, $matches2)) {
-
-						$matches2['source'] = 'orlydb';
-						$matches2['date'] = strtotime($matches2['date'] . ' UTC');
-						$this->_verifyPreData($matches2);
-					}
-				}
-			}
-			$this->_echoDone();
-			return;
-		}
-		echo "Update from Orly failed.\n";
-	}
-
-	/**
 	 * Get pre from SrrDB.
 	 */
 	protected function _retrieveSrr()
@@ -189,9 +64,9 @@ class fetchWeb
 		echo "Fetching SrrDB\n";
 		$data = $this->_getUrl("http://www.srrdb.com/feed/srrs");
 		if ($data !== false) {
-			$this->_db->ping(true);
 			$data = @simplexml_load_string($data);
 			if ($data !== false) {
+				$this->_db->ping(true);
 				foreach ($data->channel->item as $release) {
 					$result = array();
 					$result['title'] = $release->title;

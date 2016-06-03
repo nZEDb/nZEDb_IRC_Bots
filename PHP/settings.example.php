@@ -73,16 +73,6 @@ if (defined('pre_settings')) {
 		 */
 		define('WEB_SLEEP_TIME', 600);
 		/**
-		 * Whether to fetch PRE's from prelist or not.
-		 * @default false
-		 */
-		define('FETCH_PRELIST', false);
-		/**
-		 * Whether to fetch PRE's from orlydb or not.
-		 * @default false
-		 */
-		define('FETCH_ORLYDB', false);
-		/**
 		 * Whether to fetch PRE's from SRRDB.
 		 * @default false
 		 */
