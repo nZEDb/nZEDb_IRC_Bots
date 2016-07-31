@@ -116,7 +116,7 @@ class IRCServer extends IRCClient
 			} elseif ((time() - $time > 60)) {
 				$time = time();
 				foreach($this->_channels as $channel => $password) {
-					$this->_writeSocket('PRIVMSG ' . $channel . ' INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
+					$this->_writeSocket('PRIVMSG ' . $channel . ' :INFO: [' . gmdate('Y-m-d H:i:s') . ' This message is to confirm I am still active.]');
 				}
 			}
 
@@ -190,7 +190,7 @@ class IRCServer extends IRCClient
 
 		$success = true;
 		foreach($this->_channels as $channel => $password) {
-			if (!$this->_writeSocket('PRIVMSG ' . $channel . ' ' . $string)) {
+			if (!$this->_writeSocket('PRIVMSG ' . $channel . ' :' . $string)) {
 				$success = false;
 			}
 		}
