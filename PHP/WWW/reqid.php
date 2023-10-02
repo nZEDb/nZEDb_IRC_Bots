@@ -1,4 +1,5 @@
 <?php
+
 define('req_settings', true);
 
 $preData = false;

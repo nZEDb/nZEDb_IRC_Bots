@@ -3,7 +3,7 @@
 if (!isset($argv[1]) || !in_array($argv[1], array('efnet', 'corrupt'))) {
 	exit();
 }
-$silent = ((isset($argv[2]) && $argv[2] === 'true')  ? true : false);
+$silent = isset($argv[2]) && $argv[2] === 'true';
 define('pre_settings', true);
 if ($argv[1] === 'efnet') {
 	define('efnet_bot_settings', true);
