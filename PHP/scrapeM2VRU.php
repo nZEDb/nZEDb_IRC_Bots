@@ -1,9 +1,12 @@
-<?php
+<?php /** @noinspection HttpUrlsUsage */
 
 define('pre_settings', true);
 define('m2v_settings', true);
 require('settings.php');
 require_once('Classes/DB.php');
+
+const M3VRU_HTTP_HOST = 'http://m2v.ru';
+const M3VRU_HTTPS_HOST = 'https://m2v.ru';
 
 $db = new nzedb\db\DB();
 
@@ -16,6 +19,7 @@ for (;;) {
 		continue;
 	}
 
+    /** @var false|SimpleXMLElement $rss_data */
 	$rss_data = @simplexml_load_string($rss_data);
 	if (!$rss_data) {
 		echo "Error parsing XML data from M2V RSS.\n";
@@ -34,9 +38,13 @@ for (;;) {
 			continue;
 		}
 
-		$item_data = getUrl($item->link);
+        $link = str_starts_with($item->link, M3VRU_HTTP_HOST)
+            ? str_replace(M3VRU_HTTP_HOST, M3VRU_HTTPS_HOST, $item->link)
+            : $item->link;
+
+		$item_data = getUrl($link);
 		if (!$item_data) {
-			echo "Error downloading page: '{$item->title}'\nSkipping.\n";
+			echo "Error downloading page: '$item->title'\n$link\nSkipping.\n";
 			usleep(M2VRU_THROTTLE_USLEEP);
 			continue;
 		}
@@ -60,12 +68,12 @@ for (;;) {
 			if ($alternateFileName) {
 				$fileName = $alternateFileName;
 			} else {
-				echo "Could not find file name for '{$item->title}'.\nSkipping.\n";
+				echo "Could not find file name for '$item->title'.\nSkipping.\n";
 				usleep(M2VRU_THROTTLE_USLEEP);
 				continue;
 			}
 		} else {
-			echo "Found $fileName for '{$item->title}', updating PreDB table.\n";
+			echo "Found $fileName for '$item->title', updating PreDB table.\n";
 		}
 
 		$item->title = $db->escapeString($item->title);
@@ -93,7 +101,7 @@ for (;;) {
 	sleep_printout(M2V_SLEEP_TIME);
 }
 
-function sleep_printout($time)
+function sleep_printout(int $time): void
 {
 	$time--;
 	if (!$time) {
@@ -109,11 +117,11 @@ function sleep_printout($time)
  * Use cURL To download a web page into a string.
  *
  * @param string $url       The URL to download.
- * @param bool   $debug     Show debug info.
+ * @param bool $debug     Show debug info.
  *
- * @return bool|mixed
+ * @return bool|string
  */
-function getUrl ($url, $debug = false)
+function getUrl(string $url, bool $debug = false): bool|string
 {
 	$ch      = curl_init();
 	$options = array(

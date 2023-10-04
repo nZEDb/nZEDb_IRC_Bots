@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection HttpUrlsUsage */
 
 // Copy to settings.php
 
@@ -46,9 +46,9 @@ if (defined('pre_settings')) {
 		define('M2V_SLEEP_TIME', 900);
 		/**
 		 * Link to the m2v.ru RSS, you can change this to filter which pre's to scrape.
-		 * @default 'http://m2v.ru/?act=rss'
+		 * @default 'https://m2v.ru/?act=rss'
 		 */
-		define('M2VRU_RSS_LINK', 'http://m2v.ru/?act=rss');
+		define('M2VRU_RSS_LINK', 'https://m2v.ru/?act=rss');
 		/**
 		 * How many microseconds to wait before downloading a web page from m2v.ru
 		 * This is to not hammer their website.

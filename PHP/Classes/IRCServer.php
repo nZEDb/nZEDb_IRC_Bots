@@ -1,19 +1,24 @@
 <?php
+
+use JetBrains\PhpStorm\NoReturn;
+use nzedb\db\DB;
+
 require_once('DB.php');
 require_once('IRCClient.php');
+
 class IRCServer extends IRCClient
 {
-	protected $_lastPingTime = 0;
-	protected $_optimizeIterations = 0;
-	protected $_cleanupTime;
-	protected $_box_color;
-	protected $_end_color;
-	protected $_inner_color;
-	protected $_channels;
-	protected $_ping_string;
-	public $db;
+	protected int $_lastPingTime = 0;
+	protected int $_optimizeIterations = 0;
+	protected int $_cleanupTime;
+	protected string $_box_color;
+	protected string $_end_color;
+	protected string $_inner_color;
+	protected array $_channels;
+	protected string $_ping_string;
+	public DB $db;
 
-	public function __construct()
+	#[NoReturn] public function __construct()
 	{
 		$this->_debug = POST_BOT_DEBUG;
 		$this->_cleanupTime = POST_BOT_CLEANUP;
@@ -31,13 +36,13 @@ class IRCServer extends IRCClient
 		} else {
 			$this->_inner_color = "\x03" . POST_BOT_INNER_COLOR . ' ';
 		}
-		$this->db = new nzedb\db\DB();
+		$this->db = new DB();
 		$this->initiateServer();
 		$this->startSniffing();
 	}
 
-	protected function initiateServer()
-	{
+	protected function initiateServer(): void
+    {
 		// Connect to IRC.
 		if ($this->connect(POST_BOT_HOST, POST_BOT_PORT, POST_BOT_TLS) === false) {
 			exit (
@@ -59,11 +64,11 @@ class IRCServer extends IRCClient
 
 		// Join channels.
 		$this->_channels = [POST_BOT_CHANNEL => POST_BOT_CHANNEL_PASSWORD];
-		if (strpos(POST_BOT_CHANNEL, ",#") !== false) {
+		if (str_contains(POST_BOT_CHANNEL, ",#")) {
 			$this->_channels = [];
 			$passwords = explode(',', POST_BOT_CHANNEL_PASSWORD);
 			foreach(explode(',', POST_BOT_CHANNEL) as $key => $channel){
-				$this->_channels[$channel] = (isset($passwords[$key]) ? $passwords[$key] : '');
+				$this->_channels[$channel] = ($passwords[$key] ?? '');
 			}
 		}
 		$this->joinChannels($this->_channels);
@@ -71,8 +76,8 @@ class IRCServer extends IRCClient
 		echo '[' . date('r') . '] [Connected to IRC!]' . PHP_EOL;
 	}
 
-	protected function startSniffing()
-	{
+	#[NoReturn] protected function startSniffing(): void
+    {
 		$time = time();
 		while (true)
 		{
@@ -96,7 +101,7 @@ class IRCServer extends IRCClient
 			}
 
 			$allPre = $this->db->query(
-				'SELECT p.*, UNIX_TIMESTAMP(p.predate) AS ptime, groups.name AS gname FROM predb p LEFT JOIN groups ON groups.id = p.groupid WHERE p.shared in (-1, 0)'
+				'SELECT p.*, UNIX_TIMESTAMP(p.predate) AS ptime, `groups`.name AS gname FROM predb p LEFT JOIN `groups` ON `groups`.id = p.groupid WHERE p.shared in (-1, 0)'
 			);
 			if ($allPre) {
 				$time = time();
@@ -124,13 +129,13 @@ class IRCServer extends IRCClient
 		}
 	}
 
-	protected function formatMessage($pre)
-	{
+	protected function formatMessage(array $pre): bool
+    {
 		//DT: PRE Time(UTC) | TT: Title | SC: Source | CT: Category | RQ: Requestid | SZ: Size | FL: Files
 		$string = '';
-		if ($pre['nuked'] > 0) {
+		if (intval($pre['nuked']) > 0) {
 			$string .= 'NUK: ';
-		} elseif ($pre['shared'] === '0') {
+		} elseif (intval($pre['shared']) === 0) {
 			$string .= 'NEW: ';
 		} else {
 			$string .= 'UPD: ';
@@ -146,19 +151,19 @@ class IRCServer extends IRCClient
 				$pre['source'] .
 			$this->_end_color .
 			$this->_box_color . 'CT:' . $this->_inner_color .
-				(isset($pre['category'])  ? $pre['category'] : 'N/A') .
+				($pre['category'] ?? 'N/A') .
 			$this->_end_color .
 			$this->_box_color . 'RQ:' . $this->_inner_color .
 				((isset($pre['requestid']) && $pre['requestid'] > 0) ? $pre['requestid'] . ':' . $pre['gname'] : 'N/A') .
 			$this->_end_color .
 			$this->_box_color . 'SZ:' . $this->_inner_color .
-				(isset($pre['size'])      ? $pre['size']     : 'N/A') .
+				($pre['size'] ?? 'N/A') .
 			$this->_end_color .
 			$this->_box_color . 'FL:' . $this->_inner_color .
-				(isset($pre['files'])     ? $pre['files']    : 'N/A') .
+				($pre['files'] ?? 'N/A') .
 			$this->_end_color .
 			$this->_box_color . 'FN:' . $this->_inner_color .
-				((isset($pre['filename']) && !empty($pre['filename']))  ? $pre['filename'] : 'N/A') .
+				(!empty($pre['filename']) ? $pre['filename'] : 'N/A') .
 			$this->_end_color;
 
 		if (isset($pre['nuked'])) {
